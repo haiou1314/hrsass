@@ -11,8 +11,8 @@ export function getDepartments() {
 
 /**
  * 删除部门
- * @param {*} id 
- * @returns 
+ * @param {*} id
+ * @returns
  */
 export function delDepartments(id) {
   return request({
@@ -23,13 +23,38 @@ export function delDepartments(id) {
 
 /**
  * 添加部门
- * @param {*} data 
+ * @param {*} data
  * @returns promise
  */
 export function addDepartmentsApi(data) {
   return request({
     url: `/company/department`,
     method: 'POST',
+    data,
+  })
+}
+
+/**
+ * 根据id获取部门详情
+ * @param {*} id
+ * @returns promise
+ */
+export function editDepartmentsApi(id) {
+  return request({
+    url: `/company/department/${id}`,
+    method: 'GET',
+  })
+}
+
+/**
+ * 根据id编辑部门详情
+ * @param {*} id
+ * @returns promise
+ */
+export function updateDepartmentsApi(data) {
+  return request({
+    url: `/company/department/${data.id}`,
+    method: 'PUT',
     data,
   })
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-container">
+  <div v-loading="loading" class="dashboard-container">
     <div class="app-container">
       <el-card class="box-card">
         <!-- title -->
@@ -13,13 +13,19 @@
         >
           <!-- 作用域插槽 -->
           <template v-slot="{ data }">
-            <treeTools :treeNode="data" @add="showadd" @remove="loadDepts" />
+            <treeTools
+              @edit="showedit"
+              :treeNode="data"
+              @add="showadd"
+              @remove="loadDepts"
+            />
           </template>
         </el-tree>
       </el-card>
     </div>
     <!-- 弹框 -->
     <addDept
+      ref="edit"
       @add="loadDepts"
       :visible.sync="dialogVisible"
       :currentNode="currentTrnode"
@@ -58,13 +64,22 @@ export default {
   },
 
   methods: {
+    // 获取所有部门
     async loadDepts() {
+      this.loading = true
       const res = await getDepartments()
       this.departs = tranListToTreeData(res.depts, '')
+      this.loading = false
     },
+    // 添加部门
     showadd(val) {
       this.dialogVisible = true
       this.currentTrnode = val
+    },
+    // 编辑部门
+    showedit(val) {
+      this.dialogVisible = true
+      this.$refs.edit.getDeptByid(val.id)
     },
   },
 }
