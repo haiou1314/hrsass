@@ -29,6 +29,7 @@ service.interceptors.request.use(async (config) => {
 }) // 请求拦截器
 service.interceptors.response.use(
   (res) => {
+    // console.log(res);
     const { data, success, message } = res.data
     if (success) {
       return data

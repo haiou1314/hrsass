@@ -10,10 +10,14 @@
               操作<i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>添加部门</el-dropdown-item>
-              <template v-if='!isRoot'>
+              <el-dropdown-item @click.native="$emit('add', treeNode)"
+                >添加部门</el-dropdown-item
+              >
+              <template v-if="!isRoot">
                 <el-dropdown-item>编辑部门</el-dropdown-item>
-                <el-dropdown-item>删除部门</el-dropdown-item>
+                <el-dropdown-item @click.native="onRemove"
+                  >删除部门</el-dropdown-item
+                >
               </template>
             </el-dropdown-menu>
           </el-dropdown>
@@ -24,6 +28,7 @@
 </template>
 
 <script>
+import { delDepartments } from '@/api/departments'
 export default {
   props: {
     treeNode: {
@@ -33,6 +38,20 @@ export default {
     isRoot: {
       type: Boolean,
       required: false,
+    },
+  },
+  methods: {
+    async onRemove() {
+      try {
+        await this.$confirm('此操作将永久删除该部门, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning',
+        })
+        await delDepartments(this.treeNode.id)
+        this.$emit('remove')
+        this.$$message.success('删除成功')
+      } catch (error) {}
     },
   },
 }
