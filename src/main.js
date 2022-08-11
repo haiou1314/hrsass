@@ -17,14 +17,11 @@ import '@/permission' // permission control
 
 // 导入指定义指令
 import * as directives from '@/directives'
-/**
- * If you don't want to use mock-server
- * you want to use MockJs for mock api
- * you can execute: mockXHR()
- *
- * Currently MockJs will be used in the production environment,
- * please remove it before going online ! ! !
- */
+
+import components from '@/components/index.js'
+
+Vue.use(components)
+
 if (process.env.NODE_ENV === 'production') {
   const { mockXHR } = require('../mock')
   mockXHR()
