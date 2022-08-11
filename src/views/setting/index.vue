@@ -119,7 +119,10 @@ export default {
     }
   },
 
-  created() {},
+  created() {
+    this.getRole()
+    this.getCompanyInfo()
+  },
 
   methods: {
     // 获取所有数据
