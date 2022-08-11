@@ -2,11 +2,11 @@ import router from '@/router/index.js'
 import store from '@/store/index.js'
 
 const whiteList = ['/login', '/404']
-router.beforeEach((to, from, next) => {
+router.beforeEach(async(to, from, next) => {
   const token = store.state.user.token
   if (token) {
     if (!store.state.user.userinfo.userId) {
-      store.dispatch('user/getuserinfo')
+    await  store.dispatch('user/getuserinfo')
     }
     // store.dispatch('user/getuserinfo')
     if (to.path === '/login') {
