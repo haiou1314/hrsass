@@ -3,13 +3,20 @@
     <div class="app-container">
       <PageTools>
         <template #left-text :ishowLeft="false">
-          <span>共{{total}}条记录</span>
+          <span>共{{ total }}条记录</span>
         </template>
 
         <template #right>
-          <el-button size="small" type="danger">普通excel导入</el-button>
-          <el-button size="small" type="info">复杂表头excel导入</el-button>
-          <el-button size="small" type="success" @click="$router.push('/import')">excel导入</el-button>
+          <el-button size="small" type="danger" @click="onExcel"
+            >普通excel导出</el-button
+          >
+          <el-button size="small" type="info">复杂表头excel导出</el-button>
+          <el-button
+            size="small"
+            type="success"
+            @click="$router.push('/import')"
+            >excel导入</el-button
+          >
           <el-button @click.native="showAdd" size="small" type="primary"
             >新增员工</el-button
           >
@@ -60,7 +67,12 @@
           </el-table-column>
           <el-table-column label="操作" sortable="" fixed="right" width="280">
             <template slot-scope="{ row }">
-              <el-button type="text" size="small">查看</el-button>
+              <el-button
+                type="text"
+                size="small"
+                @click="$router.push('/employees/detail/' + row.id)"
+                >查看</el-button
+              >
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
@@ -88,13 +100,17 @@
         </el-row>
       </el-card>
     </div>
-    <adddelEmployee :visible.sync="showAddEmployee" @add-success='getEmployeesList' />
+    <adddelEmployee
+      :visible.sync="showAddEmployee"
+      @add-success="getEmployeesList"
+    />
   </div>
 </template>
 
 <script>
 import { getEmployeesListApi, delEmployee } from '@/api/employees'
 import employees from '@/constant/employees'
+const { hireType, exportExcelMapPath } = employees
 import adddelEmployee from './components/addEmployment.vue'
 export default {
   name: 'Employees',
@@ -148,6 +164,37 @@ export default {
     // 点击新增员工显示弹层
     showAdd() {
       this.showAddEmployee = true
+    },
+    async onExcel() {
+      const { export_json_to_excel } = await import('@/vendor/Export2Excel')
+      const { rows, total } = await getEmployeesListApi({
+        page: 1,
+        size: this.total,
+      })
+      const header = Object.keys(exportExcelMapPath)
+      const data = rows.map((item) => {
+        return header.map((h) => {
+          if (h === '聘用形式') {
+            const findItem = hireType.find((hire) => {
+              return hire.id === item[exportExcelMapPath[h]]
+            })
+            return findItem ? findItem.value : '未知'
+          } else {
+            return item[exportExcelMapPath[h]]
+          }
+        })
+      })
+      console.log(data)
+
+      export_json_to_excel({
+        header,
+        data,
+        filename: '员工信息表',
+        autoWidth: true,
+        bookType: 'xlsx',
+        multiHeader: [['手机号', '其他信息', '', '', '', '', '部门']],
+        merges: ['A1:A2', 'B1:F1', 'G1:G2'],
+      })
     },
   },
 }

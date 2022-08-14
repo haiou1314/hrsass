@@ -10,10 +10,10 @@ export function getEmployeesApi() {
 }
 /**
  * 获取所有员工列表
- * @param {*} params 
- * @returns 
+ * @param {*} params
+ * @returns
  */
- export function getEmployeesListApi(params) {
+export function getEmployeesListApi(params) {
   return request({
     url: '/sys/user',
     params,
@@ -24,21 +24,21 @@ export function getEmployeesApi() {
  * 删除员工接口
  * ****/
 
- export function delEmployee(id) {
+export function delEmployee(id) {
   return request({
     url: `/sys/user/${id}`,
-    method: 'delete'
+    method: 'delete',
   })
 }
 
 /** **
  *  新增员工的接口
  * **/
- export function addEmployee(data) {
+export function addEmployee(data) {
   return request({
     method: 'post',
     url: '/sys/user',
-    data
+    data,
   })
 }
 
@@ -47,10 +47,18 @@ export function getEmployeesApi() {
  *
  * ***/
 
- export function importEmployeeApi(data) {
+export function importEmployeeApi(data) {
   return request({
     url: '/sys/user/batch',
     method: 'post',
-    data
+    data,
+  })
+}
+/** *
+ *  读取用户详情的基础信息
+ * **/
+export function getPersonalDetail(id) {
+  return request({
+    url: `/employees/${id}/personalInfo`,
   })
 }
