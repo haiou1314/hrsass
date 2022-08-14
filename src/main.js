@@ -22,6 +22,12 @@ import components from '@/components/index.js'
 
 Vue.use(components)
 
+// 统一注册过滤器
+import * as filters from '@/filter'
+for (const key in filters) {
+  Vue.filter(key,filters[key])
+}
+
 if (process.env.NODE_ENV === 'production') {
   const { mockXHR } = require('../mock')
   mockXHR()
@@ -36,11 +42,11 @@ Vue.config.productionTip = false
 
 // 注册所有自定义指令
 for (const key in directives) {
-  Vue.directive(key,directives[key])
+  Vue.directive(key, directives[key])
 }
 new Vue({
   el: '#app',
   router,
   store,
-  render: h => h(App)
+  render: (h) => h(App),
 })
