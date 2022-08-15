@@ -58,6 +58,8 @@
         <el-col :span="12">
           <el-form-item label="员工头像">
             <!-- 放置上传图片 -->
+            <UploadImg ref="headerImg" @onSuccess="headerImgSuccess">
+            </UploadImg>
           </el-form-item>
         </el-col>
       </el-row>
@@ -91,6 +93,8 @@
 
         <el-form-item label="员工照片">
           <!-- 放置上传图片 -->
+          <UploadImg ref="employeesPic" @onSuccess="employeesImgSuccess">
+          </UploadImg>
         </el-form-item>
         <el-form-item label="国家/地区">
           <el-select v-model="formData.nationalArea" class="inputW2">
@@ -376,7 +380,9 @@
         <!-- 保存员工信息 -->
         <el-row class="inline-info" type="flex" justify="center">
           <el-col :span="12">
-            <el-button type="primary" @click="onSoveUserinfo">保存更新</el-button>
+            <el-button type="primary" @click="onSoveUserinfo"
+              >保存更新</el-button
+            >
             <el-button @click="$router.back()">返回</el-button>
           </el-col>
         </el-row>
@@ -387,7 +393,7 @@
 
 <script>
 import EmployeeEnum from '@/constant/employees'
-import { userinfoDateil, saveUserDetailById ,updatePersonal} from '@/api/user'
+import { userinfoDateil, saveUserDetailById, updatePersonal } from '@/api/user'
 import { getPersonalDetail } from '@/api/employees'
 
 export default {
@@ -469,21 +475,35 @@ export default {
     // 获取头部的信息
     async lodeUserDetail() {
       this.userInfo = await userinfoDateil(this.userId)
+      this.$refs.headerImg.fileList.push({ url: this.userInfo.staffPhoto })
     },
     // 获取下半部分的信息
     async lodeUserinfo() {
       this.formData = await getPersonalDetail(this.userId)
+      this.$refs.employeesPic.fileList.push({ url: this.userInfo.staffPhoto })
     },
     // 保存个人信息
-   async onSoveDetail(){
-     await saveUserDetailById(this.userInfo)
-     this.$message.success('更新成功')
+    async onSoveDetail() {
+      await saveUserDetailById(this.userInfo)
+      this.$message.success('更新成功')
     },
-     // 保存个人信息
-   async onSoveUserinfo(){
-     await updatePersonal(this.formData)
-     this.$message.success('更新成功')
-    }
+    // 保存个人信息
+    async onSoveUserinfo() {
+      await updatePersonal(this.formData)
+      this.$message.success('更新成功')
+    },
+    headerImgSuccess({ url }) {
+      if (this.$refs.headerImg.loading) {
+        this.$message.error('图片上传中')
+      }
+      this.userInfo.staffPhoto = url
+    },
+    employeesImgSuccess({ url }) {
+      if (this.$refs.employeesPic.loading) {
+        this.$message.error('图片上传中')
+      }
+      this.formData.staffPhoto = url
+    },
   },
 }
 </script>
