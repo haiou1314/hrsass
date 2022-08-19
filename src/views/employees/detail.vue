@@ -28,6 +28,7 @@
             <userinfo />
           </el-tab-pane>
           <el-tab-pane name="job" label="岗位信息" />
+          <i  class="el-icon-printer" @click="$router.push('/employees/print')"></i>
         </el-tabs>
       </el-card>
     </div>

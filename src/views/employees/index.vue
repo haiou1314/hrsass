@@ -32,6 +32,7 @@
               <img
                 :src="row.staffPhoto"
                 alt=""
+                @click="shwImg(row.staffPhoto)"
                 v-imgErr="require('@/assets/common/head.jpg')"
                 style="
                   border-radius: 50%;
@@ -104,6 +105,11 @@
       :visible.sync="showAddEmployee"
       @add-success="getEmployeesList"
     />
+    <!-- 点击头像显示二维码 -->
+
+    <el-dialog width="16%" title="用户二维码" :visible.sync="previewImgDialog">
+      <canvas ref="myCanvas" />
+    </el-dialog>
   </div>
 </template>
 
@@ -112,10 +118,12 @@ import { getEmployeesListApi, delEmployee } from '@/api/employees'
 import employees from '@/constant/employees'
 const { hireType, exportExcelMapPath } = employees
 import adddelEmployee from './components/addEmployment.vue'
+import QrCode from 'qrcode'
 export default {
   name: 'Employees',
   data() {
     return {
+      previewImgDialog: false,
       showAddEmployee: false,
       getemployees: [],
       total: 0,
@@ -194,6 +202,14 @@ export default {
         bookType: 'xlsx',
         multiHeader: [['手机号', '其他信息', '', '', '', '', '部门']],
         merges: ['A1:A2', 'B1:F1', 'G1:G2'],
+      })
+    },
+    // 点击二维码显示头像
+    shwImg(staffPhoto) {
+      if (!staffPhoto) return this.$message.error('用户没有上传头像')
+      this.previewImgDialog = true
+      this.$nextTick(() => {
+        QrCode.toCanvas(this.$refs.myCanvas, staffPhoto) // 将地址转化成二维码
       })
     },
   },

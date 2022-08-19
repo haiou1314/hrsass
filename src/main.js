@@ -19,6 +19,8 @@ import '@/permission' // permission control
 import * as directives from '@/directives'
 
 import components from '@/components/index.js'
+import Print from 'vue-print-nb'
+Vue.use(Print);
 
 Vue.use(components)
 
