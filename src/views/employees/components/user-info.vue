@@ -1,6 +1,9 @@
 <template>
   <div class="user-info">
-    <i  class="el-icon-printer" @click="$router.push(`/employees/print/${userId}?type=personal`)"></i>
+    <i
+      @click="$router.push(`/employees/print/${userId}?type=personal`)"
+      class="el-icon-printer"
+    ></i>
     <!-- 个人信息 -->
     <el-form label-width="220px">
       <!-- 工号 入职时间 -->
@@ -59,15 +62,16 @@
         <el-col :span="12">
           <el-form-item label="员工头像">
             <!-- 放置上传图片 -->
-            <UploadImg ref="headerImg" @onSuccess="headerImgSuccess">
-            </UploadImg>
+            <upload-img ref="headerImg" @onSuccess="headerImgSuccess" />
           </el-form-item>
         </el-col>
       </el-row>
       <!-- 保存个人信息 -->
       <el-row class="inline-info" type="flex" justify="center">
         <el-col :span="12">
-          <el-button type="primary" @click="onSoveDetail">保存更新</el-button>
+          <el-button type="primary" @click="onSaveUserDetail"
+            >保存更新</el-button
+          >
           <el-button @click="$router.back()">返回</el-button>
         </el-col>
       </el-row>
@@ -94,8 +98,7 @@
 
         <el-form-item label="员工照片">
           <!-- 放置上传图片 -->
-          <UploadImg ref="employeesPic" @onSuccess="employeesImgSuccess">
-          </UploadImg>
+          <upload-img ref="employeesPic" @onSuccess="employeesPicSuccess" />
         </el-form-item>
         <el-form-item label="国家/地区">
           <el-select v-model="formData.nationalArea" class="inputW2">
@@ -381,7 +384,7 @@
         <!-- 保存员工信息 -->
         <el-row class="inline-info" type="flex" justify="center">
           <el-col :span="12">
-            <el-button type="primary" @click="onSoveUserinfo"
+            <el-button type="primary" @click="onSaveEmployeesInfo"
               >保存更新</el-button
             >
             <el-button @click="$router.back()">返回</el-button>
@@ -394,8 +397,8 @@
 
 <script>
 import EmployeeEnum from '@/constant/employees'
-import { userinfoDateil, saveUserDetailById, updatePersonal } from '@/api/user'
-import { getPersonalDetail } from '@/api/employees'
+import { getUserDetail, saveUserDetailById } from '@/api/user.js'
+import { getPersonalDetail, updatePersonal } from '@/api/employees.js'
 
 export default {
   data() {
@@ -469,40 +472,43 @@ export default {
     }
   },
   created() {
-    this.lodeUserDetail()
-    this.lodeUserinfo()
+    this.loadUserDetail()
+    this.loadEmployeesInfo()
   },
   methods: {
-    // 获取头部的信息
-    async lodeUserDetail() {
-      this.userInfo = await userinfoDateil(this.userId)
-      this.$refs.headerImg.fileList.push({ url: this.userInfo.staffPhoto })
+    async loadUserDetail() {
+      this.userInfo = await getUserDetail(this.userId)
+      this.$refs.headerImg.fileList.push({
+        url: this.userInfo.staffPhoto,
+      })
     },
-    // 获取下半部分的信息
-    async lodeUserinfo() {
+    async loadEmployeesInfo() {
       this.formData = await getPersonalDetail(this.userId)
-      this.$refs.employeesPic.fileList.push({ url: this.userInfo.staffPhoto })
+      this.$refs.employeesPic.fileList.push({
+        url: this.formData.staffPhoto,
+      })
     },
-    // 保存个人信息
-    async onSoveDetail() {
+    async onSaveUserDetail() {
+      if (this.$refs.headerImg.loading) {
+        return this.$message.error('头像正在上传中')
+      }
       await saveUserDetailById(this.userInfo)
+
       this.$message.success('更新成功')
     },
-    // 保存个人信息
-    async onSoveUserinfo() {
+    async onSaveEmployeesInfo() {
+      if (this.$refs.employeesPic.loading) {
+        return this.$message.error('头像正在上传中')
+      }
       await updatePersonal(this.formData)
       this.$message.success('更新成功')
     },
+    // 监听员工头像上传成功
     headerImgSuccess({ url }) {
-      if (this.$refs.headerImg.loading) {
-        this.$message.error('图片上传中')
-      }
       this.userInfo.staffPhoto = url
     },
-    employeesImgSuccess({ url }) {
-      if (this.$refs.employeesPic.loading) {
-        this.$message.error('图片上传中')
-      }
+    // 监听员工照片上传成功
+    employeesPicSuccess({ url }) {
       this.formData.staffPhoto = url
     },
   },

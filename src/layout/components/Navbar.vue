@@ -8,7 +8,7 @@
 
     <!-- <breadcrumb class="breadcrumb-container" /> -->
     <div class="app-breadcrumb">
-      {{ $store.state.user.userinfo.companyName }}
+      {{ $store.state.user.userInfo.companyName }}
       <span class="breadBtn">体验版</span>
     </div>
 
@@ -16,16 +16,16 @@
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img
-            :src="$store.state.user.userinfo.image"
+            :src="$store.state.user.userInfo.staffPhoto + '123'"
             class="user-avatar"
-            v-imgErr="defaultimg"
+            v-imgError="defaultImg"
           />
-          <span>{{ $store.state.user.userinfo.username }}</span>
+          <span>{{ $store.state.user.userInfo.username }}</span>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
-            <el-dropdown-item>Home</el-dropdown-item>
+            <el-dropdown-item> Home </el-dropdown-item>
           </router-link>
           <el-dropdown-item divided @click.native="logout">
             <span style="display: block">Log Out</span>
@@ -40,12 +40,13 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
-import defaultimg from '@/assets/common/head.jpg'
+import defaultImg from '@/assets/common/head.jpg'
 
 export default {
+  // 如果想在data中定义本地图片路径,需要先引入
   data() {
     return {
-      defaultimg: defaultimg,
+      defaultImg,
     }
   },
   components: {
@@ -74,6 +75,7 @@ export default {
   position: relative;
   background-image: -webkit-linear-gradient(left, #3d6df8, #5b8cff);
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+
   .app-breadcrumb {
     display: inline-block;
     font-size: 18px;
@@ -100,7 +102,7 @@ export default {
     cursor: pointer;
     transition: background 0.3s;
     -webkit-tap-highlight-color: transparent;
-    color: #ffffff;
+    color: #fff;
     fill: currentColor;
 
     &:hover {
@@ -143,14 +145,16 @@ export default {
       margin-right: 30px;
 
       .avatar-wrapper {
-        // margin-top: 5px;
         position: relative;
         display: flex;
         align-items: center;
         color: #fff;
-        > span {
-          cursor: pointer;
+        cursor: pointer;
+
+        span {
+          margin: 0 3px;
         }
+
         .user-avatar {
           cursor: pointer;
           width: 40px;
@@ -162,7 +166,6 @@ export default {
           cursor: pointer;
           position: absolute;
           right: -20px;
-          // top: 25px;
           font-size: 12px;
         }
       }

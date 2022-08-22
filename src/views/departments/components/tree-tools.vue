@@ -1,5 +1,5 @@
 <template>
-  <el-row type="flex" style="width: 100%">
+  <el-row style="width: 100%" type="flex">
     <el-col>{{ treeNode.name }}</el-col>
     <el-col :span="5">
       <el-row type="flex">
@@ -14,7 +14,9 @@
                 >添加部门</el-dropdown-item
               >
               <template v-if="!isRoot">
-                <el-dropdown-item @click.native="$emit('edit',treeNode)">编辑部门</el-dropdown-item>
+                <el-dropdown-item @click.native="$emit('edit', treeNode)"
+                  >编辑部门</el-dropdown-item
+                >
                 <el-dropdown-item @click.native="onRemove"
                   >删除部门</el-dropdown-item
                 >
@@ -28,8 +30,13 @@
 </template>
 
 <script>
-import { delDepartments } from '@/api/departments'
+import { delDeptsApi } from '@/api/departments'
 export default {
+  name: 'TreeTools',
+  data() {
+    return {}
+  },
+
   props: {
     treeNode: {
       type: Object,
@@ -37,24 +44,27 @@ export default {
     },
     isRoot: {
       type: Boolean,
-      required: false,
+      default: false,
     },
   },
+
+  created() {},
+
   methods: {
     async onRemove() {
       try {
         await this.$confirm('此操作将永久删除该部门, 是否继续?', '提示', {
-          confirmButtonText: '确定',
+          confirmButtonText: '删除',
           cancelButtonText: '取消',
           type: 'warning',
         })
-        await delDepartments(this.treeNode.id)
+        await delDeptsApi(this.treeNode.id)
+        this.$message.success('删除成功')
         this.$emit('remove')
-        this.$$message.success('删除成功')
-      } catch (error) {}
+      } catch (err) {}
     },
   },
 }
 </script>
 
-<style scoped></style>
+<style scoped lang="less"></style>

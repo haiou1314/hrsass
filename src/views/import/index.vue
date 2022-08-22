@@ -1,17 +1,16 @@
 <template>
   <div class="dashboard-container">
     <div class="app-container">
-      <UploadExcel :beforeUpload="excelSuccess" :onSuccess="onSuccess" />
+      <upload-excel :beforeUpload="excelSuccess" :onSuccess="onSuccess" />
     </div>
   </div>
 </template>
 
 <script>
-import UploadExcel from '@/components/UploadExcel'
 import employees from '@/constant/employees'
-const { employeesMapKeyPath } = employees
-import { filterTime } from '@/filter'
-import { importEmployeeApi } from '@/api/employees'
+import { importEmployees } from '@/api/employees'
+import { formatTime } from '@/filters'
+const { importMapKeyPath } = employees
 export default {
   data() {
     return {}
@@ -20,37 +19,38 @@ export default {
   created() {},
 
   methods: {
+    // 上传前的处理
     excelSuccess({ name }) {
-      if (!name.endsWith('xlsx')) {
-        this.$message.success('请选择xlsx')
+      if (!name.endsWith('.xlsx')) {
+        this.$message.error('请选择xlsx文件')
         return false
       }
       return true
     },
+    // 上传成功
     async onSuccess({ header, results }) {
-      const arr = results.map((item) => {
-        let obj = {}
-        for (const key in employeesMapKeyPath) {
+      const newArr = results.map((item) => {
+        const obj = {}
+        for (let key in importMapKeyPath) {
           if (key === '入职日期' || key === '转正日期') {
+            // excel 时间戳
             const timestamp = item[key]
+            // 转换
             const date = new Date((timestamp - 1) * 24 * 3600000)
             date.setFullYear(date.getFullYear() - 70)
-            obj[employeesMapKeyPath[key]] = filterTime(date)
+            obj[importMapKeyPath[key]] = formatTime(date)
           } else {
-            obj[employeesMapKeyPath[key]] = item[key]
+            obj[importMapKeyPath[key]] = item[key]
           }
         }
         return obj
       })
-      await importEmployeeApi(arr)
+      await importEmployees(newArr)
       this.$message.success('导入成功')
       this.$router.go(-1)
     },
   },
-  components: {
-    UploadExcel,
-  },
 }
 </script>
 
-<style scoped></style>
+<style scoped lang="less"></style>

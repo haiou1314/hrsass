@@ -1,6 +1,7 @@
 import request from '@/utils/request'
+
 /**
- * 获取员工列表（简单）
+ * 获取员工列表(简单)
  * @returns promise
  */
 export function getEmployeesApi() {
@@ -8,12 +9,13 @@ export function getEmployeesApi() {
     url: '/sys/user/simple',
   })
 }
+
 /**
- * 获取所有员工列表
- * @param {*} params
+ * 获取员工列表
+ * @param {*} params {page, size}
  * @returns
  */
-export function getEmployeesListApi(params) {
+export function getEmployeesInfoApi(params) {
   return request({
     url: '/sys/user',
     params,
@@ -41,25 +43,35 @@ export function addEmployee(data) {
     data,
   })
 }
-
-/** *
- *  封装一个批量导入员工的接口
- *
- * ***/
-
-export function importEmployeeApi(data) {
+/**
+ * 批量导入员工
+ * @param {*} data 员工数组
+ */
+export function importEmployees(data) {
   return request({
-    url: '/sys/user/batch',
     method: 'post',
+    url: '/sys/user/batch',
     data,
   })
 }
+
 /** *
  *  读取用户详情的基础信息
  * **/
 export function getPersonalDetail(id) {
   return request({
     url: `/employees/${id}/personalInfo`,
+  })
+}
+
+/** *
+ *  更新用户详情的基础信息
+ * **/
+export function updatePersonal(data) {
+  return request({
+    url: `/employees/${data.userId}/personalInfo`,
+    method: 'put',
+    data,
   })
 }
 
