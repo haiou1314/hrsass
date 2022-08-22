@@ -13,7 +13,12 @@
             <el-table-column prop="description" label="描述"> </el-table-column>
             <el-table-column prop="address" label="操作">
               <template slot-scope="{ row }">
-                <el-button size="small" type="success">分配权限</el-button>
+                <el-button
+                  size="small"
+                  type="success"
+                  @click="showPermissionList(row.id)"
+                  >分配权限</el-button
+                >
                 <el-button size="small" type="primary">编辑</el-button>
                 <el-button
                   size="small"
@@ -92,15 +97,46 @@
         <el-button type="primary" @click="addRole">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 权限对话框 -->
+    <el-dialog
+      @close="onclose"
+      title="提示"
+      :visible.sync="showPermission"
+      width="30%"
+    >
+      <el-tree
+        ref="tree"
+        v-if="showPermission"
+        default-expand-all
+        show-checkbox
+        node-key="id"
+        :data="permission"
+        :default-checked-keys="difaultCheckKeys"
+        :props="{ label: 'name' }"
+      ></el-tree>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="onclose">取 消</el-button>
+        <el-button type="primary" @click="onpermission">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRoleApi, addRoleApi, deleteRoleApi } from '@/api/role'
+import {
+  getRoleApi,
+  addRoleApi,
+  deleteRoleApi,
+  getRolesInfo,
+  assignPerm,
+} from '@/api/role'
 import { getCompanyInfoApi } from '@/api/setting'
+import { getPermissionList } from '@/api/permission'
+import { tranListToTreeData } from '@/utils/index'
 export default {
   data() {
     return {
+      showPermission: false,
       activeName: 'first',
       tableData: [],
       total: 0,
@@ -116,12 +152,16 @@ export default {
         description: [{ required: true, message: '请填写手机号' }],
       },
       companyInfo: {},
+      permission: [],
+      difaultCheckKeys: [],
+      roleId: '',
     }
   },
 
   created() {
     this.getRole()
     this.getCompanyInfo()
+    this.getPermissionList()
   },
 
   methods: {
@@ -182,14 +222,43 @@ export default {
         this.$store.state.user.userinfo.companyId,
       )
       this.companyInfo = res
+    },
+    // 获取所有权限列表
+    async getPermissionList() {
+      const res = await getPermissionList()
+      const treePermission = tranListToTreeData(res, '0')
+      this.permission = treePermission
+    },
+    // 点击开启分配角色弹框
+    async showPermissionList(id) {
+      this.roleId = id
+      this.showPermission = true
+      const res = await getRolesInfo(id)
+      this.difaultCheckKeys = res.permIds
       console.log(res)
+    },
+    //关闭弹窗
+    onclose() {
+      this.showPermission = false
+      this.difaultCheckKeys = []
+    },
+    // 点击确定
+    async onpermission() {
+      // console.log(this.roleId)
+      // console.log(this.$refs.tree.getCheckedKeys())
+      await assignPerm({
+        id: this.roleId,
+        permIds: this.$refs.tree.getCheckedKeys(),
+      })
+      this.$message.success('分配成功')
+      this.showPermission = false
     },
   },
 }
 </script>
 
 <style scoped lang="scss">
-.tishi{
+.tishi {
   margin-bottom: 50px;
 }
 </style>

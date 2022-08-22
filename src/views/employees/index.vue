@@ -5,7 +5,6 @@
         <template #left-text :ishowLeft="false">
           <span>共{{ total }}条记录</span>
         </template>
-
         <template #right>
           <el-button size="small" type="danger" @click="onExcel"
             >普通excel导出</el-button
@@ -77,13 +76,20 @@
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
-              <el-button type="text" size="small">角色</el-button>
-              <el-button type="text" size="small" @click="onRemove(row.id)"
+              <el-button type="text" size="small" @click="editRole(row.id)"
+                >角色</el-button
+              >
+              <el-button type="text" size="small" @click="onRemove(row.id)" v-if="isHas(points.employees.del)"
                 >删除</el-button
               >
             </template>
           </el-table-column>
         </el-table>
+
+        <assigonRole
+          :visible.sync="showAssignRole"
+          :userId="userId"
+        ></assigonRole>
         <!-- 分页组件 -->
         <el-row
           type="flex"
@@ -119,10 +125,15 @@ import employees from '@/constant/employees'
 const { hireType, exportExcelMapPath } = employees
 import adddelEmployee from './components/addEmployment.vue'
 import QrCode from 'qrcode'
+import assigonRole from './components/assignRole.vue'
+import mixinsPermission from '@/mixins/permission.js'
 export default {
   name: 'Employees',
+  mixins:[mixinsPermission],
   data() {
     return {
+      userId: '',
+      showAssignRole: false,
       previewImgDialog: false,
       showAddEmployee: false,
       getemployees: [],
@@ -139,6 +150,7 @@ export default {
   },
   components: {
     adddelEmployee,
+    assigonRole,
   },
 
   methods: {
@@ -212,6 +224,12 @@ export default {
         QrCode.toCanvas(this.$refs.myCanvas, staffPhoto) // 将地址转化成二维码
       })
     },
+    async editRole(id) {
+      this.userId = id // props传值 是异步的
+      // await this.$refs.assignRole.getUserDetailById(id) // 父组件调用子组件方法
+      this.showAssignRole = true
+    },
+  
   },
 }
 </script>
