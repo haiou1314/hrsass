@@ -13,10 +13,12 @@
     </div>
 
     <div class="right-menu">
+      <ToggleLang />
+      <full-screen></full-screen>
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img
-            :src="$store.state.user.userInfo.staffPhoto + '123'"
+            :src="$store.getters.avatar"
             class="user-avatar"
             v-imgError="defaultImg"
           />
@@ -118,6 +120,7 @@ export default {
     float: right;
     height: 100%;
     line-height: 50px;
+    display: flex;
 
     &:focus {
       outline: none;

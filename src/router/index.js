@@ -38,7 +38,8 @@ export const constantRoutes = [
         path: 'dashboard',
         name: 'Dashboard',
         component: () => import('@/views/dashboard/index'),
-        meta: { title: '首页', icon: 'dashboard' },
+        // title 记录的只是 语言包里面对应的ey
+        meta: { title: 'dashboard', icon: 'dashboard' },
       },
     ],
   },

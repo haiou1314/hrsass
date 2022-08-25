@@ -35,9 +35,9 @@
                 :src="row.staffPhoto"
                 style="
                   border-radius: 50%;
-                  width: 1.25rem;
-                  height: 1.25rem;
-                  padding: .125rem;
+                  width: 100px;
+                  height: 100px;
+                  padding: 10px;
                 "
                 @click="showErCodeDialog(row.staffPhoto)"
               />
@@ -107,7 +107,7 @@
           type="flex"
           justify="center"
           align="middle"
-          style="height: .75rem"
+          style="height: 60px"
         >
           <el-pagination
             :page-size="pages.size"
